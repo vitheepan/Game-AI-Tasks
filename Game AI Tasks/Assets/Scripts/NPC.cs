@@ -10,7 +10,8 @@ public class NPC : MonoBehaviour
     {
         Patrol,
         Chase,
-        Attack
+        Attack,
+        Retreat
     }
 
     [SerializeField]
@@ -24,12 +25,18 @@ public class NPC : MonoBehaviour
     [SerializeField]
     Material ChaseMaterial;
     [SerializeField]
+    Material RetreatMaterial;
+    [SerializeField]
     Material AttackMaterial;
     [SerializeField]
     float ChaseRange = 7f;
     [SerializeField]
     float AttackRange = 4f;
+    [SerializeField]
+    float RetreatRange = 10f;
 
+    float RetreatDistance = 10f;
+    float RetreatSpeed = 10f;
     float FireRate = 2f;
     int nextPatrolPoint = 0;
     NPCStates currentState = NPCStates.Patrol;
@@ -61,6 +68,9 @@ public class NPC : MonoBehaviour
                 break;
             case NPCStates.Attack:
                 Attack();
+                break;
+            case NPCStates.Retreat:
+                Retreat();
                 break;
             default:
                 Patrol();
@@ -139,4 +149,27 @@ public class NPC : MonoBehaviour
             currentState = NPCStates.Chase;
         }
     }
+
+    private void Retreat()
+    {
+        // Stop moving and switch to retreat material
+        navMeshAgent.isStopped = true;
+        meshRenderer.material = RetreatMaterial;
+
+        // Rotate away from the player
+        transform.rotation = Quaternion.LookRotation(transform.position - Player.position);
+
+        // Move away from the player
+        Vector3 direction = transform.position - Player.position;
+        Vector3 retreatPosition = transform.position + direction.normalized * RetreatDistance;
+        navMeshAgent.SetDestination(retreatPosition);
+
+        // Switch back to chase state if player is out of retreat range
+        if (Vector3.Distance(Player.position, transform.position) > RetreatRange)
+        {
+            currentState = NPCStates.Chase;
+        }
+    }
+
+
 }
