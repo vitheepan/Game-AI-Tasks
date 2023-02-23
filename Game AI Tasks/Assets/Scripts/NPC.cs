@@ -36,7 +36,7 @@ public class NPC : MonoBehaviour
     float RetreatRange = 10f;
 
     float RetreatDistance = 10f;
-    float RetreatSpeed = 10f;
+    float RetreatSpeed;
     float FireRate = 2f;
     int nextPatrolPoint = 0;
     NPCStates currentState = NPCStates.Patrol;
