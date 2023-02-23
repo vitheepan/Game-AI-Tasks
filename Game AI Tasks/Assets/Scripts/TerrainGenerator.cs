@@ -159,7 +159,7 @@ public class TerrainGenerator : MonoBehaviour
             {
                 float y = Mathf.PerlinNoise(x * perlinFrequencyX, z * perlinFrequencyZ) * perlinNoiseStrength;
 
-                vertices[i] = new Vector3(x, 0, z);
+                vertices[i] = new Vector3(x, y, z);
 
                 if (y > maxHeight)
                 {
