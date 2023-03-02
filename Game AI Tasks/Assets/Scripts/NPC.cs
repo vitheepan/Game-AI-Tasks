@@ -32,10 +32,10 @@ public class NPC : MonoBehaviour
     float ChaseRange = 7f;
     [SerializeField]
     float AttackRange = 4f;
-    [SerializeField]
-    float RetreatRange = 10f;
+    
+    float RetreatRange;
 
-    float RetreatDistance = 10f;
+    float RetreatDistance;
     float RetreatSpeed;
     float FireRate = 2f;
     int nextPatrolPoint = 0;
@@ -164,10 +164,16 @@ public class NPC : MonoBehaviour
         Vector3 retreatPosition = transform.position + direction.normalized * RetreatDistance;
         navMeshAgent.SetDestination(retreatPosition);
 
+        // Debug statements to check the values of some variables
+        Debug.Log("Distance to player: " + Vector3.Distance(Player.position, transform.position));
+        Debug.Log("Retreat range: " + RetreatRange);
+        Debug.Log("Current state: " + currentState);
+
         // Switch back to chase state if player is out of retreat range
         if (Vector3.Distance(Player.position, transform.position) > RetreatRange)
         {
             currentState = NPCStates.Chase;
+            Debug.Log("Switching to chase state");
         }
     }
 
