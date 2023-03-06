@@ -1615,7 +1615,7 @@ PrefabInstance:
     - target: {fileID: 5163935979477673914, guid: 081b350ae4718bf4a8499a1a67871cfb, type: 3}
       propertyPath: RetreatMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: d013a266863915f4f97ebd9daab70968, type: 2}
+      objectReference: {fileID: 2100000, guid: befbd5ce55c4c9741bba570f8f82f0ab, type: 2}
     - target: {fileID: 5163935979477673914, guid: 081b350ae4718bf4a8499a1a67871cfb, type: 3}
       propertyPath: PatrolPoints.Array.size
       value: 4
@@ -2343,7 +2343,7 @@ PrefabInstance:
     - target: {fileID: 5163935979477673914, guid: 081b350ae4718bf4a8499a1a67871cfb, type: 3}
       propertyPath: RetreatMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: d013a266863915f4f97ebd9daab70968, type: 2}
+      objectReference: {fileID: 2100000, guid: befbd5ce55c4c9741bba570f8f82f0ab, type: 2}
     - target: {fileID: 5163935979477673914, guid: 081b350ae4718bf4a8499a1a67871cfb, type: 3}
       propertyPath: PatrolPoints.Array.data[0].x
       value: 4

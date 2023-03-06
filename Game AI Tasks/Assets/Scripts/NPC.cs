@@ -65,6 +65,9 @@ public class NPC : MonoBehaviour
             case NPCStates.Attack:
                 Attack();
                 break;
+            case NPCStates.Retreat:
+                Retreat();
+                break;
             default:
                 Patrol();
                 break;
@@ -140,6 +143,41 @@ public class NPC : MonoBehaviour
         if (Vector3.Distance(Player.position, transform.position) <= ChaseRange)
         {
             currentState = NPCStates.Chase;
+        }
+    }
+
+    private void Retreat()
+    {
+        // Your code
+        // Switch to retreat material
+        meshRenderer.material = RetreatMaterial;
+
+        // Calculate the patrol point farthest away from the player
+        int farthestPatrolPoint = 0;
+        float maxDistance = 0;
+        for (int i = 0; i < PatrolPoints.Length; i++)
+        {
+            float distance = Vector3.Distance(PatrolPoints[i], Player.position);
+            if (distance > maxDistance)
+            {
+                maxDistance = distance;
+                farthestPatrolPoint = i;
+            }
+        }
+
+        // Move towards the farthest patrol point
+        navMeshAgent.SetDestination(PatrolPoints[farthestPatrolPoint]);
+
+        // Switch back to patrol state if the NPC reaches the destination patrol point
+        if (Vector3.Distance(transform.position, PatrolPoints[farthestPatrolPoint]) < navMeshAgent.stoppingDistance)
+        {
+            currentState = NPCStates.Patrol;
+            nextPatrolPoint = farthestPatrolPoint;
+        }
+        // Switch to a new retreat state if the player moves close to the destination patrol point
+        else if (Vector3.Distance(Player.position, PatrolPoints[farthestPatrolPoint]) < ChaseRange)
+        {
+            currentState = NPCStates.Retreat;
         }
     }
 
