@@ -14,8 +14,7 @@ public class NPC : MonoBehaviour
         Retreat
     }
 
-    [SerializeField]
-    Vector3[] PatrolPoints;
+
     [SerializeField]
     Transform Player;
     [SerializeField]
@@ -40,11 +39,20 @@ public class NPC : MonoBehaviour
     MeshRenderer meshRenderer;
     float nextShootTime = 0;
 
+    public Transform[] waypoints;
+    int waypointsIndex;
+    private int farthestPatrolPointIndex;
+    Vector3 target;
+    private GameObject player;
+    private float retreatDistance = 10.0f;
+
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.SetDestination(PatrolPoints[nextPatrolPoint]);
+        //navMeshAgent.SetDestination(PatrolPoints[nextPatrolPoint]);
         meshRenderer = GetComponent<MeshRenderer>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        UpdateDestination();
     }
 
     void Update()
@@ -118,25 +126,25 @@ public class NPC : MonoBehaviour
         // Switch back to patrol state if out of chase range
         else if (Vector3.Distance(Player.position, transform.position) > ChaseRange)
         {
-            currentState = NPCStates.Patrol;
+            currentState = NPCStates.Retreat;
         }
     }
 
     private void Patrol()
     {
+        // Increment patrol point counter and wrap around if necessary
+        // Set the next patrol point as the new destination
+
         // Your code
         // Switch to patrol material and start moving
         meshRenderer.material = PatrolMaterial;
         navMeshAgent.isStopped = false;
 
         // Check if NPC has reached the current patrol point
-        if (Vector3.Distance(transform.position, PatrolPoints[nextPatrolPoint]) < navMeshAgent.stoppingDistance)
+        if (Vector3.Distance(transform.position, target) < 1)
         {
-            // Increment patrol point counter and wrap around if necessary
-            nextPatrolPoint = (nextPatrolPoint + 1) % PatrolPoints.Length;
-
-            // Set the next patrol point as the new destination
-            navMeshAgent.SetDestination(PatrolPoints[nextPatrolPoint]);
+            IterateWayPointIndex();
+            UpdateDestination();
         }
 
         // Switch to chase state if player is within chase range
@@ -146,39 +154,53 @@ public class NPC : MonoBehaviour
         }
     }
 
+    void UpdateDestination()
+    {
+        target = waypoints[waypointsIndex].position;
+        navMeshAgent.SetDestination(target);
+    }
+
+    void IterateWayPointIndex()
+    {
+        waypointsIndex++;
+        if (waypointsIndex == waypoints.Length)
+        {
+            waypointsIndex = 0;
+        }
+    }
+
     private void Retreat()
     {
         // Your code
         // Switch to retreat material
         meshRenderer.material = RetreatMaterial;
 
-        // Calculate the patrol point farthest away from the player
-        int farthestPatrolPoint = 0;
-        float maxDistance = 0;
-        for (int i = 0; i < PatrolPoints.Length; i++)
+        if (Vector3.Distance(transform.position, player.transform.position) > retreatDistance) // if player is far enough away
         {
-            float distance = Vector3.Distance(PatrolPoints[i], Player.position);
-            if (distance > maxDistance)
+            navMeshAgent.SetDestination(waypoints[waypointsIndex].position); // move to current patrol point
+        }
+        else // if player is too close
+        {
+            // calculate the farthest patrol point from the player
+            float farthestDistance = 0.0f;
+            for (int i = 0; i < waypoints.Length; i++)
             {
-                maxDistance = distance;
-                farthestPatrolPoint = i;
+                float distance = Vector3.Distance(waypoints[i].position, player.transform.position);
+                if (distance > farthestDistance)
+                {
+                    farthestDistance = distance;
+                    farthestPatrolPointIndex = i;
+                }
             }
-        }
 
-        // Move towards the farthest patrol point
-        navMeshAgent.SetDestination(PatrolPoints[farthestPatrolPoint]);
-
-        // Switch back to patrol state if the NPC reaches the destination patrol point
-        if (Vector3.Distance(transform.position, PatrolPoints[farthestPatrolPoint]) < navMeshAgent.stoppingDistance)
-        {
+            navMeshAgent.SetDestination(waypoints[farthestPatrolPointIndex].position); // move to farthest patrol point
             currentState = NPCStates.Patrol;
-            nextPatrolPoint = farthestPatrolPoint;
         }
-        // Switch to a new retreat state if the player moves close to the destination patrol point
-        else if (Vector3.Distance(Player.position, PatrolPoints[farthestPatrolPoint]) < ChaseRange)
+
+        if (Vector3.Distance(Player.position, transform.position) <= ChaseRange)
         {
-            currentState = NPCStates.Retreat;
+            currentState = NPCStates.Chase;
+            Debug.Log("about to chase again");
         }
     }
-
 }
