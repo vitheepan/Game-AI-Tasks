@@ -8,6 +8,7 @@ public class Pathfinding : MonoBehaviour
 	Grid grid; // reference to the grid
 
 	public GameObject Seeker;
+	public GameObject Target;
 	private Rigidbody rb;
 	public float speed;
 
@@ -16,6 +17,7 @@ public class Pathfinding : MonoBehaviour
 		grid = GetComponent<Grid>();
 
 		rb = Seeker.GetComponent<Rigidbody>();
+
 	}
 
 	void Update()
@@ -26,7 +28,15 @@ public class Pathfinding : MonoBehaviour
 		float moveVertical = Input.GetAxis("Vertical");
 
 		rb.velocity = new Vector3(moveHorizontal * speed, 0f, moveVertical * speed);
+		
+		MoveTowards();
 
+
+	}
+
+	void MoveTowards()
+    {
+        rb.transform.position = Vector3.MoveTowards(rb.transform.position, Target.transform.position, speed * Time.deltaTime);
 	}
 
 	void FindPath(Vector3 startPos, Vector3 targetPos)
