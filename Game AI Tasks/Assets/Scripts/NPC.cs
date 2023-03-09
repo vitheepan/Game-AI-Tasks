@@ -33,7 +33,7 @@ public class NPC : MonoBehaviour
     float AttackRange = 4f;
 
     float FireRate = 2f;
-    int nextPatrolPoint = 0;
+    int nextPatrolPoint;
     NPCStates currentState = NPCStates.Patrol;
     NavMeshAgent navMeshAgent;
     MeshRenderer meshRenderer;
